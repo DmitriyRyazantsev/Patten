@@ -35,12 +35,20 @@ class DeliveryTest {
         $("[data-test-id=name] [type=text]").setValue(validUser.getName());
         $("[class='input__control'][name='phone']").setValue(validUser.getPhone());
         $("[data-test-id=agreement]").click();
-        $("[role=button] .button__text").click();
+        $(byText("Запланировать")).click();
         $(byText("Успешно!")).shouldBe(visible, Duration.ofSeconds(15));
-        $("notification__content")
-                .shouldHave(Condition.text("Встреча успешно забронирована на " + firstMeetingDate), Duration.ofSeconds(15))
+        $("[data-test-id='success-notification'] .notification__content")
+                .shouldHave(Condition.text("Встреча успешно запланирована на " + firstMeetingDate), Duration.ofSeconds(15))
                 .shouldBe(Condition.visible);
-
-
+        $("[class='input__box'] [placeholder='Дата встречи']").doubleClick().sendKeys(Keys.BACK_SPACE);
+        $("[class='input__box'] [placeholder='Дата встречи'] ").sendKeys(secondMeetingDate);
+        $(byText("Запланировать")).click();
+        $("[data-test-id='replan-notification'] .notification__content")
+                .shouldHave(Condition.text("У вас уже запланирована встреча на другую дату. Перепланировать?"))
+                .shouldBe(Condition.visible);
+        $(byText("Перепланировать")).click();
+        $("[data-test-id='success-notification'] .notification__content")
+                .shouldHave(Condition.text("Встреча успешно запланирована на " + secondMeetingDate))
+                .shouldBe(Condition.visible);
     }
 }
